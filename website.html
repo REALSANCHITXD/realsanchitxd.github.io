@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sanchit Thakur</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #0f0f0f;
+    --border: #1a1a1a;
+    --accent: #00ff88;
+    --accent2: #0066ff;
+    --muted: #444;
+    --text: #e8e8e8;
+    --text-dim: #666;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.35s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.4;
+  }
+
+  /* Grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .nav-logo:hover { opacity: 0.85; }
+
+  a { cursor: pointer; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 3rem;
+    z-index: 1;
+  }
+  .hero-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-name span { color: var(--accent); }
+  .hero-sub {
+    margin-top: 2rem;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    color: var(--text-dim);
+    max-width: 520px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-badges {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .badge {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .badge:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .btn {
+    padding: 0.8rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #fff; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    right: 3rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    writing-mode: vertical-lr;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s forwards;
+  }
+  .hero-scroll::before {
+    content: '';
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--accent));
+  }
+
+  /* NUMBER decor */
+  .hero-num {
+    position: absolute;
+    right: 3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(10rem, 20vw, 18rem);
+    font-weight: 800;
+    color: rgba(0,255,136,0.03);
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* HERO LAYOUT + PHOTO */
+  .hero-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .hero-left { flex: 1; min-width: 0; max-width: 640px; }
+  .hero-photo-wrap {
+    flex-shrink: 0;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+    margin-left: 1rem;
+  }
+  .hero-photo-ring {
+    width: 236px;
+    height: 236px;
+    border-radius: 50%;
+    padding: 6px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.35), rgba(0,102,255,0.2));
+    box-shadow: 0 0 0 8px rgba(0,255,136,0.06), 0 0 48px rgba(0,255,136,0.12);
+  }
+  .hero-photo {
+    width: 224px;
+    height: 224px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 3px solid var(--bg);
+    display: block;
+    filter: grayscale(10%) contrast(1.05);
+  }
+  .hero-photo-label {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .hero-photo-label:hover { color: var(--accent); }
+  @media (max-width: 900px) {
+    .hero-photo-wrap { display: none; }
+    .hero-inner { display: block; }
+  }
+
+  /* PREPRINT BUTTON */
+  .preprint-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--accent);
+    padding: 0.9rem 1.5rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.2s, transform 0.2s;
+    background: rgba(0,255,136,0.04);
+  }
+  .preprint-btn:hover {
+    background: rgba(0,255,136,0.1);
+    transform: translateX(4px);
+  }
+  .preprint-icon { font-size: 1.5rem; }
+  .preprint-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.2rem;
+  }
+  .preprint-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 7rem 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1;
+    margin-bottom: 3rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .skill-card {
+    background: var(--bg);
+    padding: 2rem;
+    transition: background 0.2s;
+  }
+  .skill-card:hover { background: var(--surface); }
+  .skill-card-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .skill-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .skill-card p { font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
+
+  /* RESEARCH */
+  .research-block {
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    margin-bottom: 1px;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .research-block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.3s;
+    transform-origin: bottom;
+  }
+  .research-block:hover::before { transform: scaleY(1); }
+  .research-block:hover { background: var(--surface); }
+  .research-date {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .research-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .research-points { list-style: none; }
+  .research-points li {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding: 0.4rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+    line-height: 1.7;
+    border-bottom: 1px solid var(--border);
+  }
+  .research-points li:last-child { border-bottom: none; }
+  .research-points li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* PROJECTS */
+  .project-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 2rem;
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    margin-bottom: 1px;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .project-card:hover { background: var(--surface); }
+  .project-card:hover .project-arrow { transform: translate(4px, -4px); color: var(--accent); }
+  .project-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .project-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .tech-chip {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .project-arrow {
+    font-size: 1.5rem;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  /* EXPERIENCE / LEADERSHIP */
+  .timeline { position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .timeline-item {
+    padding-left: 2.5rem;
+    padding-bottom: 3rem;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -4px; top: 6px;
+    width: 9px; height: 9px;
+    border: 1px solid var(--accent);
+    background: var(--bg);
+    transform: rotate(45deg);
+  }
+  .timeline-date {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .timeline-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .timeline-org { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+  .timeline-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
+
+  /* EDUCATION */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .edu-card {
+    background: var(--bg);
+    padding: 2rem;
+    transition: background 0.2s;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .edu-card:hover { background: var(--surface); }
+  .edu-card--static { cursor: default; }
+  .edu-link {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,255,136,0.35);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .edu-link:hover { color: #fff; border-color: var(--accent); }
+  .edu-type { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .edu-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .edu-sub { font-size: 0.7rem; color: var(--text-dim); line-height: 1.7; }
+
+  /* CONTACT */
+  #contact { text-align: center; }
+  .contact-email {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 4vw, 3.5rem);
+    font-weight: 800;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+    transition: color 0.2s;
+    display: inline-block;
+    margin: 2rem 0 3rem;
+  }
+  .contact-email:hover { color: var(--accent); }
+  .contact-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+  .contact-link {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .contact-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* STAT ROW */
+  .stat-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1;
+    min-width: 140px;
+    padding: 1.5rem 2rem;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.4rem; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    #hero { padding: 0 1.5rem; }
+    .hero-num { display: none; }
+    .hero-scroll { display: none; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .project-card { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="#hero">ST_</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#leadership">Leadership</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">// Available for research & collaboration</div>
+      <h1 class="hero-name">Sanchit<br/><span>Thakur</span></h1>
+      <p class="hero-sub">AI/ML Engineer · Quantitative Researcher · Autonomous Systems Builder<br/>Building at the intersection of probabilistic ML and quantitative finance.</p>
+      <div class="hero-badges">
+        <span class="badge">Bayesian Inference</span>
+        <span class="badge">Quant Finance</span>
+        <span class="badge">NLP</span>
+        <span class="badge">Deep Learning</span>
+        <span class="badge">Autonomous Systems</span>
+      </div>
+      <div class="hero-cta">
+        <a href="#research" class="btn btn-primary">View Research</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-photo-wrap">
+      <div class="hero-photo-ring">
+        <img class="hero-photo" src="profile.jpg" alt="Sanchit Thakur"/>
+      </div>
+      <a class="hero-photo-label" href="https://www.linkedin.com/in/realsanchit" target="_blank" rel="noopener noreferrer">Sanchit Thakur</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">// 01 — About</div>
+  <div class="stat-row reveal">
+    <div class="stat"><div class="stat-num">18/18</div><div class="stat-label">Regime shifts detected</div></div>
+    <div class="stat"><div class="stat-num">2nd</div><div class="stat-label">Year CSE AI/ML</div></div>
+    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Club members led</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Parameter retuning</div></div>
+  </div>
+  <div class="skills-grid reveal">
+    <div class="skill-card">
+      <div class="skill-card-label">ML / AI</div>
+      <div class="skill-card-title">Machine Learning</div>
+      <p>PyTorch · NumPy · Pandas · Scikit-learn · Deep Learning · NLP</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-label">Research</div>
+      <div class="skill-card-title">Probabilistic Modeling</div>
+      <p>Bayesian Inference · Sequential Decision Making · Stochastic Processes · Regime Detection</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-label">Quant</div>
+      <div class="skill-card-title">Quantitative Finance</div>
+      <p>Signal Research · Feature Engineering · Backtesting · Time Series Analysis</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-label">Engineering</div>
+      <div class="skill-card-title">Systems & Tools</div>
+      <p>Python · C++ · Flask · Git · Async Infrastructure · Jupyter</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="section-label">// 02 — Research</div>
+  <h2 class="section-title">Original<br/>Research</h2>
+  <div class="research-block reveal">
+    <div class="research-date">Jan 2026 – Present · Independent Research · Preprint</div>
+    <div class="research-title">Empirical Survivability Framework (ESF)</div>
+    <a class="preprint-btn" href="preprint.pdf" target="_blank" rel="noopener noreferrer">
+      <span class="preprint-icon">📄</span>
+      <div>
+        <div class="preprint-label">// Preprint</div>
+        <div class="preprint-title">Read the Paper →</div>
+      </div>
+    </a>
+    <ul class="research-points">
+      <li>Fully distribution-free probabilistic system for non-stationary sequential environments. Decay-weighted trust with non-zero floor preserves low-weight hypotheses across regime transitions — directly addresses core particle filter resampling failure with zero Gaussian assumptions.</li>
+      <li><strong>Theorem 1:</strong> Proved optimal observation window W* = D uniquely minimises within-regime instability; validated 10/11 regimes, 6/6 out-of-sample on unseen AAPL data, zero parameter retuning.</li>
+      <li><strong>Theorem 2:</strong> Derived explicit trust convergence bound T ≤ log(ε · (1 − decay)) / log(decay); validated across 19/19 regime shifts on AAPL and Bitcoin in-sample and out-of-sample.</li>
+      <li><strong>Theorem 3:</strong> Derived fragility detection function F(t) from binary entropy; proactive signal fires before 18/18 regime shifts across equity, cryptocurrency, and climate domains with identical parameters throughout.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">// 03 — Projects</div>
+  <h2 class="section-title">What I've<br/>Built</h2>
+  <a class="project-card reveal" href="https://github.com/REALSANCHITXD/Chaching" target="_blank" rel="noopener noreferrer">
+    <div>
+      <div class="project-tag">2025 – Present · Autonomous Systems</div>
+      <div class="project-title">Chaching — AI Trading Bot</div>
+      <p class="project-desc">Autonomous multi-broker trading system supporting live and paper trading across Alpaca (US equities) and Binance (crypto). Integrated FinBERT for real-time NLP sentiment analysis on financial news alongside technical indicators. Multi-factor decision engine normalises signals into confidence-scored trade signals. Live Flask dashboard tracks real-time PnL, Sharpe Ratio, and Max Drawdown.</p>
+      <div class="project-tech">
+        <span class="tech-chip">Python</span>
+        <span class="tech-chip">FinBERT</span>
+        <span class="tech-chip">Flask</span>
+        <span class="tech-chip">Alpaca API</span>
+        <span class="tech-chip">Binance API</span>
+        <span class="tech-chip">Async</span>
+        <span class="tech-chip">NLP</span>
+      </div>
+    </div>
+    <div class="project-arrow">↗</div>
+  </a>
+</section>
+
+<!-- LEADERSHIP -->
+<section id="leadership">
+  <div class="section-label">// 04 — Leadership</div>
+  <h2 class="section-title">Leading<br/>Teams</h2>
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-date">2026 – Present</div>
+      <div class="timeline-role">Technical Head — ACM Student Chapter</div>
+      <div class="timeline-org">Amity University Punjab · Founding Team</div>
+      <div class="timeline-desc">Core founding member of the ACM chapter. Oversee technical infrastructure, workshops, and competitive programming initiatives.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2025 – Present</div>
+      <div class="timeline-role">Startup Head — Pixel Club (AI/ML)</div>
+      <div class="timeline-org">Amity University Punjab · 50+ Members</div>
+      <div class="timeline-desc">Lead AI/ML club of 50+ members. Organise technical workshops, hackathons, and industry speaker events.</div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">// 05 — Education & Awards</div>
+  <h2 class="section-title">Credentials</h2>
+  <div class="edu-grid reveal">
+    <div class="edu-card">
+      <div class="edu-type">Degree</div>
+      <div class="edu-title">B.Tech CSE — AI/ML Specialization</div>
+      <div class="edu-sub">Amity University Punjab<br/>Aug 2023 – Present<br/>ML · Linear Algebra · Quantitative Methods · DSA</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-type">Certification · Wharton / Coursera</div>
+      <div class="edu-title">Fundamentals of Quantitative Modeling</div>
+      <div class="edu-sub">2024<br/><a class="edu-link" href="https://www.coursera.org/account/accomplishments/verify/OOJ40IYVMWKB" target="_blank" rel="noopener noreferrer">Verify certificate (OOJ40IYVMWKB)</a></div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-type">Competition · Kaggle · Apr 2026</div>
+      <div class="edu-title">AIMO 3 — AI Mathematical Olympiad</div>
+      <div class="edu-sub">Competed in OpenAI's AI Mathematical Olympiad on <a class="edu-link" href="https://www.kaggle.com/REALSANCHITXD" target="_blank" rel="noopener noreferrer">Kaggle</a>.</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-type">Hackathon · Apr 2025</div>
+      <div class="edu-title">OpenAI × NextWave — State-Level Winner</div>
+      <div class="edu-sub">Won at state level in the OpenAI × NextWave Hackathon.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">// 06 — Contact</div>
+  <h2 class="section-title">Let's Work<br/>Together</h2>
+  <a class="contact-email reveal" href="mailto:s.thakurrrr4612@gmail.com">s.thakurrrr4612@gmail.com</a>
+  <div class="contact-links reveal">
+    <a class="contact-link" href="https://www.linkedin.com/in/realsanchit" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a class="contact-link" href="https://github.com/REALSANCHITXD" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a class="contact-link" href="mailto:s.thakurrrr4612@gmail.com">Email</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Sanchit Thakur</span>
+  <span>Mohali, Punjab, India</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  function animRing() { rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.querySelectorAll('a,button,.btn').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width='60px'; ring.style.height='60px'; ring.style.opacity='0.8'; });
+    el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='0.4'; });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => { if(e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i*80); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => io.observe(r));
+</script>
+</body>
+</html>

@@ -26,7 +26,9 @@
     color: var(--text);
     font-family: 'Space Mono', monospace;
     overflow-x: hidden;
-    cursor: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    body { cursor: none; }
   }
 
   /* Custom cursor */
@@ -568,6 +570,18 @@
     transition: opacity 0.7s ease, transform 0.7s ease;
   }
   .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* If OS disables animations, hero must not stay invisible */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-tag, .hero-name, .hero-sub, .hero-badges, .hero-cta, .hero-photo-wrap {
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
 
   /* STAT ROW */
   .stat-row {
